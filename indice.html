@@ -594,7 +594,7 @@ new Chart(document.getElementById("chartNiveles"), {
   options:{
     responsive:true, maintainAspectRatio:false,
     plugins:{ legend:{display:false},
-      tooltip:{ callbacks:{ label:(c)=> `${c.raw.toFixed(1).replace(".",",")}% (${NIVELES[c.dataIndex].n} empresas)` } } },
+      tooltip:{ callbacks:{ label:(c)=> `${c.raw.toFixed(1).replace(".",",")}%` } } },
     scales:{ y:{ display:false, max:70 }, x:{ grid:{display:false} } }
   }
 });
