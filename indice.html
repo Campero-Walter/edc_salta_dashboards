@@ -65,6 +65,7 @@
     text-decoration:none; padding:13px 14px; white-space:nowrap; border-bottom:3px solid transparent;
   }
   nav.tabs a:hover{ color:var(--azul-800); border-bottom-color:var(--azul-300); }
+  nav.tabs a.active{ color:var(--azul-500); border-bottom-color:var(--azul-500); }
 
   main{ max-width:1180px; margin:0 auto; padding:32px clamp(16px,4vw,48px) 80px; }
   section{ margin-bottom:52px; scroll-margin-top:56px; }
@@ -947,6 +948,28 @@ const IMPLICANCIAS_VOUCHERS = [
 ];
 document.getElementById("implicanciasANR").innerHTML = IMPLICANCIAS_ANR.map(i => `<li>${i}</li>`).join("");
 document.getElementById("implicanciasVouchers").innerHTML = IMPLICANCIAS_VOUCHERS.map(i => `<li>${i}</li>`).join("");
+
+/* =======================================================================
+   SCROLLSPY — resalta en la nav la sección visible en pantalla
+   ======================================================================= */
+(function () {
+  const enlacesNav = document.querySelectorAll("nav.tabs a");
+  const secciones = Array.from(enlacesNav)
+    .map(a => document.querySelector(a.getAttribute("href")))
+    .filter(Boolean);
+
+  const marcarActivo = (id) => {
+    enlacesNav.forEach(a => a.classList.toggle("active", a.getAttribute("href") === `#${id}`));
+  };
+
+  const observador = new IntersectionObserver((entradas) => {
+    const visibles = entradas.filter(e => e.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+    if (visibles.length > 0) marcarActivo(visibles[0].target.id);
+  }, { rootMargin: "-90px 0px -60% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] });
+
+  secciones.forEach(s => observador.observe(s));
+})();
 </script>
 </body>
 </html>

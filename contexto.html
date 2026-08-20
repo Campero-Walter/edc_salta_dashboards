@@ -51,6 +51,7 @@
   nav.tabs{ position:sticky; top:0; z-index:20; background:var(--blanco); border-bottom:1px solid var(--gris-200); display:flex; gap:2px; overflow-x:auto; padding:0 clamp(16px,4vw,48px); }
   nav.tabs a{ font-family:var(--sans); font-size:13px; font-weight:600; color:var(--gris-500); text-decoration:none; padding:13px 14px; white-space:nowrap; border-bottom:3px solid transparent; }
   nav.tabs a:hover{ color:var(--azul-800); border-bottom-color:var(--azul-300); }
+  nav.tabs a.active{ color:var(--azul-500); border-bottom-color:var(--azul-500); }
 
   main{ max-width:1180px; margin:0 auto; padding:32px clamp(16px,4vw,48px) 80px; }
   section{ margin-bottom:52px; scroll-margin-top:56px; }
@@ -114,7 +115,7 @@
 
 <nav class="tabs">
   <a href="#resumen">Resumen</a>
-  <a href="#evolucion">Evolución y empleo</a>
+  <a href="#evolucion">Actividad y empleo</a>
   <a href="#distribucion">Distribución del sector</a>
   <a href="#normativo">Marco normativo</a>
   <a href="#brechas">Brechas</a>
@@ -138,7 +139,7 @@
 
   <!-- ============ EVOLUCIÓN Y EMPLEO ============ -->
   <section id="evolucion">
-    <h2>Evolución y empleo</h2>
+    <h2>Actividad y empleo</h2>
     <p class="lead">El sector TIC y Robótica crece por encima del promedio del ecosistema EdC y del sector privado provincial.</p>
     <div class="grid cols-2">
       <div class="card">
@@ -423,6 +424,28 @@ const OPORTUNIDADES = [
   "Líneas de crédito blandas complementarias a los ANR, en articulación con el sistema de garantías recíprocas (SGR), banca comercial y esquemas de capital semilla o venture capital.",
 ];
 document.getElementById("listaOportunidades").innerHTML = OPORTUNIDADES.map(o => `<li>${o}</li>`).join("");
+
+/* =======================================================================
+   SCROLLSPY — resalta en la nav la sección visible en pantalla
+   ======================================================================= */
+(function () {
+  const enlacesNav = document.querySelectorAll("nav.tabs a");
+  const secciones = Array.from(enlacesNav)
+    .map(a => document.querySelector(a.getAttribute("href")))
+    .filter(Boolean);
+
+  const marcarActivo = (id) => {
+    enlacesNav.forEach(a => a.classList.toggle("active", a.getAttribute("href") === `#${id}`));
+  };
+
+  const observador = new IntersectionObserver((entradas) => {
+    const visibles = entradas.filter(e => e.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+    if (visibles.length > 0) marcarActivo(visibles[0].target.id);
+  }, { rootMargin: "-90px 0px -60% 0px", threshold: [0, 0.25, 0.5, 0.75, 1] });
+
+  secciones.forEach(s => observador.observe(s));
+})();
 </script>
 </body>
 </html>
