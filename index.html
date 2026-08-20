@@ -13,10 +13,13 @@
   }
   *{box-sizing:border-box;}
   body{ margin:0; background:var(--gris-50); color:#262626; font-family:var(--sans); }
-  header{ background:var(--azul-950); color:#fff; padding:32px clamp(16px,5vw,64px); }
+  header{ background:var(--azul-950); color:#fff; padding:24px clamp(16px,5vw,64px); display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; }
+  header .texto{ flex:1; min-width:260px; }
   header .eyebrow{ font-size:11px; letter-spacing:1.6px; text-transform:uppercase; color:var(--azul-100); display:block; margin-bottom:6px; }
   header h1{ font-family:var(--serif); font-size:clamp(24px,3.4vw,34px); margin:0; }
   header p{ color:var(--gris-200); font-size:14px; max-width:640px; margin:10px 0 0; }
+  header .logos{ flex-shrink:0; }
+  header .logos img{ max-height:104px; width:auto; display:block; background:#fff; padding:8px 16px; border-radius:6px; }
 
   main{ max-width:920px; margin:0 auto; padding:40px clamp(16px,5vw,64px) 80px; display:grid; gap:22px; grid-template-columns:1fr 1fr; }
   @media (max-width:700px){ main{ grid-template-columns:1fr; } }
@@ -36,9 +39,14 @@
 </head>
 <body>
 <header>
-  <span class="eyebrow">Componente 1 · Programa BID AR-L1386</span>
-  <h1>Economía del Conocimiento — TIC y Robótica, Salta</h1>
-  <p>Tableros interactivos del diagnóstico: contexto sectorial (fuentes secundarias) e índice de adopción de soluciones EdC (relevamiento primario).</p>
+  <div class="texto">
+    <span class="eyebrow">Componente 1 · Programa BID AR-L1386</span>
+    <h1>Economía del Conocimiento — TIC y Robótica, Salta</h1>
+    <p>Tableros interactivos del diagnóstico: contexto sectorial (fuentes secundarias) e índice de adopción de soluciones EdC (relevamiento primario).</p>
+  </div>
+  <div class="logos">
+    <img src="assets/logos.jpeg" alt="Gobierno de Salta - Ministerio de Economía y Servicios Públicos / Banco Interamericano de Desarrollo (BID)">
+  </div>
 </header>
 <main>
   <a class="card" href="contexto.html">
