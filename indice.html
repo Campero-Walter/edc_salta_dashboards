@@ -682,7 +682,7 @@ function pintarSegmentacion(nombreVar){
     options:{
       indexAxis:"y", responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false},
-        tooltip:{ callbacks:{ label:(c)=> `${c.raw.toFixed(1).replace(".",",")} puntos (n=${datos[c.dataIndex].n})` } } },
+        tooltip:{ callbacks:{ label:(c)=> `${c.raw.toFixed(1).replace(".",",")} puntos` } } },
       scales:{ x:{ min:0, max:70, title:{display:true, text:"IA-EdC (0-100)", font:{weight:"bold"}} } }
     }
   });
@@ -716,7 +716,7 @@ function pintarMultirespuesta(nombrePregunta){
     options:{
       indexAxis:"y", responsive:true, maintainAspectRatio:false,
       plugins:{ legend:{display:false},
-        tooltip:{ callbacks:{ label:(c)=> `${c.raw.toFixed(1).replace(".",",")}% (${datos[c.dataIndex].n} empresas)` } } },
+        tooltip:{ callbacks:{ label:(c)=> `${c.raw.toFixed(1).replace(".",",")}%` } } },
       scales:{ x:{ min:0, max:100, title:{display:true, text:"% de empresas", font:{weight:"bold"}} } }
     }
   });
