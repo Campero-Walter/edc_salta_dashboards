@@ -22,7 +22,13 @@
     --sans: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
   }
   *{box-sizing:border-box;}
-  body{ margin:0; background:var(--gris-50); color:var(--gris-800); font-family:var(--sans); line-height:1.45; }
+  html, body{ height:100%; }
+  body{
+    margin:0; color:var(--gris-800); font-family:var(--sans); line-height:1.45;
+    background:
+      linear-gradient(180deg, rgba(247,248,250,.90), rgba(247,248,250,.95)),
+      url("assets/hero-bg.jpg") center top / cover no-repeat fixed;
+  }
   a{color:inherit;}
 
   header.top{
@@ -31,6 +37,7 @@
     min-height:96px;
     padding:0 clamp(16px,4vw,48px);
     display:flex; align-items:center; justify-content:center;
+    border-bottom:3px solid #C81D25;
   }
   header.top h1{ font-family:var(--serif); font-weight:700; font-size:clamp(20px,2.4vw,28px); margin:0; letter-spacing:.2px; }
   header.top .eyebrow{ font-family:var(--sans); font-size:11px; letter-spacing:1.6px; text-transform:uppercase; color:var(--azul-300); margin-bottom:4px; display:block; }
