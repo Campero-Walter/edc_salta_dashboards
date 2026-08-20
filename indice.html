@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IA-EdC · TIC y Robótica · Salta</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root{
+    --azul-950:#12283D;
+    --azul-800:#1F4E79;
+    --azul-500:#5B9BD5;
+    --azul-300:#8FAADC;
+    --azul-100:#DCE6F5;
+    --gris-800:#262626;
+    --gris-500:#595959;
+    --gris-300:#B9B9B9;
+    --gris-200:#D9D9D9;
+    --gris-50:#F7F8FA;
+    --blanco:#FFFFFF;
+    --serif: Georgia, 'Times New Roman', serif;
+    --sans: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--gris-50); color:var(--gris-800);
+    font-family:var(--sans); line-height:1.45;
+  }
+  a{color:inherit;}
+
+  header.top{
+    background:var(--azul-950); color:var(--blanco);
+    padding:18px clamp(16px,4vw,48px);
+    display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
+  }
+  header.top h1{
+    font-family:var(--serif); font-weight:700; font-size:clamp(20px,2.4vw,28px);
+    margin:0; letter-spacing:.2px;
+  }
+  header.top .eyebrow{
+    font-family:var(--sans); font-size:11px; letter-spacing:1.6px; text-transform:uppercase;
+    color:var(--azul-300); margin-bottom:4px; display:block;
+  }
+  header.top .meta{ font-size:12.5px; color:var(--gris-200); text-align:right;}
+  header.top .logos{ flex-shrink:0; }
+  header.top .logos img{
+    max-height:52px; width:auto; display:block;
+    background:#fff; padding:6px 12px; border-radius:6px;
+  }
+
+  nav.tabs{
+    position:sticky; top:0; z-index:20;
+    background:var(--blanco); border-bottom:1px solid var(--gris-200);
+    display:flex; gap:2px; overflow-x:auto; padding:0 clamp(16px,4vw,48px);
+  }
+  nav.tabs a{
+    font-family:var(--sans); font-size:13px; font-weight:600; color:var(--gris-500);
+    text-decoration:none; padding:13px 14px; white-space:nowrap; border-bottom:3px solid transparent;
+  }
+  nav.tabs a:hover{ color:var(--azul-800); border-bottom-color:var(--azul-300); }
+
+  main{ max-width:1180px; margin:0 auto; padding:32px clamp(16px,4vw,48px) 80px; }
+  section{ margin-bottom:52px; scroll-margin-top:56px; }
+  section h2{
+    font-family:var(--serif); font-size:21px; margin:0 0 4px; color:var(--azul-950);
+  }
+  section p.lead{ margin:0 0 20px; color:var(--gris-500); font-size:14px; max-width:760px; }
+
+  .card{
+    background:var(--blanco); border:1px solid var(--gris-200); border-radius:8px;
+    padding:20px 22px;
+  }
+  .grid{ display:grid; gap:18px; }
+  .grid.cols-2{ grid-template-columns:1fr 1fr; }
+  .grid.cols-4{ grid-template-columns:repeat(4,1fr); }
+  @media (max-width:820px){
+    .grid.cols-2, .grid.cols-4{ grid-template-columns:1fr; }
+  }
+
+  /* ---- Hero / gauge ---- */
+  .hero{ display:grid; grid-template-columns: 340px 1fr; gap:24px; align-items:stretch; }
+  @media (max-width:820px){ .hero{ grid-template-columns:1fr; } }
+  .gauge-wrap{ display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .gauge-value{ font-family:var(--serif); font-size:46px; font-weight:700; color:var(--azul-950); margin-top:-64px; }
+  .gauge-label{ font-family:var(--sans); font-size:12px; letter-spacing:1px; color:var(--gris-500); text-transform:uppercase; }
+  .gauge-badge{
+    margin-top:8px; font-family:var(--sans); font-weight:700; font-size:13px;
+    background:var(--azul-100); color:var(--azul-800); padding:5px 14px; border-radius:20px;
+  }
+  .kpi-stack{ display:flex; flex-direction:column; gap:14px; justify-content:center; }
+  .kpi-row{ display:flex; align-items:center; gap:14px; }
+  .kpi-row .kpi-label{ width:130px; font-size:13px; color:var(--gris-500); flex-shrink:0; }
+  .kpi-row .bar-track{ flex:1; background:var(--gris-200); border-radius:5px; height:14px; overflow:hidden; }
+  .kpi-row .bar-fill{ height:100%; border-radius:5px 0 0 5px; }
+  .kpi-row .kpi-value{ width:52px; text-align:right; font-family:var(--serif); font-weight:700; font-size:15px; }
+  .n-note{ font-size:12px; color:var(--gris-500); margin-top:10px; }
+
+  /* ---- Tabs interiores (segmentación / desglose) ---- */
+  .subtabs{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; }
+  .subtabs button{
+    font-family:var(--sans); font-size:12.5px; font-weight:600; cursor:pointer;
+    border:1px solid var(--gris-200); background:var(--blanco); color:var(--gris-500);
+    padding:7px 13px; border-radius:20px; transition:all .15s;
+  }
+  .subtabs button.active{ background:var(--azul-800); border-color:var(--azul-800); color:var(--blanco); }
+  .subtabs button:hover:not(.active){ border-color:var(--azul-500); color:var(--azul-800); }
+
+  select.chooser{
+    font-family:var(--sans); font-size:13px; padding:8px 12px; border-radius:6px;
+    border:1px solid var(--gris-200); background:var(--blanco); color:var(--gris-800); margin-bottom:16px;
+  }
+
+  canvas{ max-width:100%; }
+  .chart-box{ position:relative; }
+
+  footer{
+    border-top:1px solid var(--gris-200); padding:22px clamp(16px,4vw,48px);
+    font-size:12px; color:var(--gris-500); background:var(--blanco);
+  }
+
+  :focus-visible{ outline:2px solid var(--azul-500); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+
+  /* ---- Nuevo: badges de fuente (cuanti / cuali) ---- */
+  .badge{
+    display:inline-block; font-family:var(--sans); font-size:10.5px; font-weight:700;
+    letter-spacing:.4px; text-transform:uppercase; padding:3px 9px; border-radius:12px;
+    margin-right:6px;
+  }
+  .badge.cuanti{ background:var(--azul-100); color:var(--azul-800); }
+  .badge.cuali{ background:#EDE7DA; color:#7A5C00; }
+  .badge.core{ background:var(--azul-800); color:#fff; }
+  .badge.enablers{ background:var(--gris-500); color:#fff; }
+
+  /* ---- Triangulación: tabla ---- */
+  table.triangulacion{ width:100%; border-collapse:collapse; font-size:13.5px; }
+  table.triangulacion th{
+    text-align:left; font-family:var(--sans); font-size:11px; letter-spacing:.5px; text-transform:uppercase;
+    color:var(--gris-500); border-bottom:2px solid var(--gris-200); padding:8px 10px;
+  }
+  table.triangulacion td{ padding:12px 10px; border-bottom:1px solid var(--gris-200); vertical-align:top; }
+  table.triangulacion tr:last-child td{ border-bottom:none; }
+  table.triangulacion td.dim{ font-family:var(--serif); font-weight:700; color:var(--azul-950); width:16%; }
+
+  /* ---- Acordeón (cualitativo) ---- */
+  .accordion-item{ border:1px solid var(--gris-200); border-radius:8px; margin-bottom:10px; overflow:hidden; background:var(--blanco); }
+  .accordion-item summary{
+    cursor:pointer; padding:14px 18px; font-family:var(--sans); font-weight:700; font-size:14px;
+    color:var(--azul-950); list-style:none; display:flex; justify-content:space-between; align-items:center;
+  }
+  .accordion-item summary::-webkit-details-marker{ display:none; }
+  .accordion-item summary::after{ content:"+"; font-size:18px; color:var(--azul-500); }
+  .accordion-item[open] summary::after{ content:"–"; }
+  .accordion-item .accordion-body{ padding:0 18px 16px; font-size:13.5px; color:var(--gris-800); }
+  .accordion-item .accordion-body p{ margin:0 0 10px; }
+  .accordion-item .accordion-body ul{ margin:0 0 10px; padding-left:20px; }
+
+  /* ---- Tarjetas de casos destacados ---- */
+  .case-card{
+    background:var(--blanco); border:1px solid var(--gris-200); border-radius:8px; padding:18px 20px;
+  }
+  .case-card h3{ font-family:var(--serif); font-size:16px; margin:0 0 4px; color:var(--azul-950); }
+  .case-card .case-sub{ font-size:12px; color:var(--gris-500); margin-bottom:10px; }
+  .case-card dl{ display:grid; grid-template-columns:auto 1fr; gap:4px 10px; font-size:12.5px; margin:0 0 10px; }
+  .case-card dt{ color:var(--gris-500); }
+  .case-card dd{ margin:0; }
+  .case-card p.desc{ font-size:13px; margin:0; }
+
+  /* ---- Brechas: lista con acento ---- */
+  .brecha-item{ border-left:3px solid var(--azul-500); padding:4px 0 4px 14px; margin-bottom:14px; }
+  .brecha-item.enabler{ border-left-color:var(--gris-500); }
+  .brecha-item h4{ font-family:var(--sans); font-size:13.5px; margin:0 0 4px; color:var(--azul-950); }
+  .brecha-item p{ font-size:13px; margin:0; color:var(--gris-800); }
+
+  /* ---- Implicancias: checklist ---- */
+  ul.checklist{ list-style:none; padding:0; margin:0; }
+  ul.checklist li{ padding:8px 0 8px 26px; border-bottom:1px solid var(--gris-200); font-size:13.5px; position:relative; }
+  ul.checklist li:last-child{ border-bottom:none; }
+  ul.checklist li::before{ content:"→"; position:absolute; left:0; color:var(--azul-500); font-weight:700; }
+
+  .subhead{ font-family:var(--serif); font-size:15px; font-weight:700; color:var(--azul-950); margin:22px 0 10px; }
+  .subhead:first-child{ margin-top:0; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div>
+    <span class="eyebrow">Componente 1 · Programa BID</span>
+    <h1>Índice de Adopción de Soluciones EdC</h1>
+    <div class="meta" style="text-align:left; margin-top:4px;">Sectores TIC y Robótica · Provincia de Salta</div>
+  </div>
+  <div class="logos">
+    <img src="assets/logos.jpeg" alt="Gobierno de Salta - Ministerio de Economía y Servicios Públicos / Banco Interamericano de Desarrollo (BID)">
+  </div>
+</header>
+
+<nav class="tabs">
+  <a href="#resumen">Resumen</a>
+  <a href="#dimensiones">Dimensiones</a>
+  <a href="#desglose">Desglose por dimensión</a>
+  <a href="#segmentacion">Segmentación</a>
+  <a href="#percepciones">Percepciones y barreras</a>
+  <a href="#cualitativo">Entrevistas y focus groups</a>
+  <a href="#triangulacion">Triangulación</a>
+  <a href="#cadena">Cadena de valor</a>
+  <a href="#casos">Casos destacados</a>
+  <a href="#benchmarking">Benchmarking</a>
+  <a href="#brechas">Brechas e implicancias</a>
+  <a href="#conclusiones">Conclusiones</a>
+</nav>
+
+<main>
+
+  <!-- ============ RESUMEN ============ -->
+  <section id="resumen">
+    <h2>Resumen general</h2>
+    <p class="lead">Índice agregado a nivel provincial (criterio top-down, todas las empresas pesan igual) y su desagregación en los componentes Core y Enablers.</p>
+    <div class="card hero">
+      <div class="gauge-wrap">
+        <svg id="gauge" width="300" height="180" viewBox="0 0 300 180"></svg>
+        <div class="gauge-value" id="gaugeValue">41,4</div>
+        <div class="gauge-label">IA-EdC provincial (0-100)</div>
+        <div class="gauge-badge" id="gaugeBadge">Nivel Básico</div>
+      </div>
+      <div class="kpi-stack">
+        <div class="kpi-row">
+          <span class="kpi-label">Core</span>
+          <span class="bar-track"><span class="bar-fill" style="width:43.8%; background:var(--azul-800);"></span></span>
+          <span class="kpi-value">43,8</span>
+        </div>
+        <div class="kpi-row">
+          <span class="kpi-label">Enablers</span>
+          <span class="bar-track"><span class="bar-fill" style="width:34.1%; background:var(--gris-500);"></span></span>
+          <span class="kpi-value">34,1</span>
+        </div>
+        <div class="chart-box" style="height:220px; margin-top:12px;">
+          <canvas id="chartNiveles"></canvas>
+        </div>
+        <p class="n-note">Distribución de empresas por nivel de adopción (Inicial 0-25 · Básico 26-50 · Intermedio 51-75 · Avanzado 76-100).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DIMENSIONES ============ -->
+  <section id="dimensiones">
+    <h2>Puntaje por dimensión</h2>
+    <p class="lead">Las cinco dimensiones del modelo IA-EdC, agrupadas conceptualmente en Core (tecnología, innovación, capital humano) y Enablers (vinculación, capacidad de inversión).</p>
+    <div class="card">
+      <div class="chart-box" style="height:340px;">
+        <canvas id="chartDimensiones"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DESGLOSE ============ -->
+  <section id="desglose">
+    <h2>Desglose por dimensión</h2>
+    <p class="lead">Puntaje de cada variable que compone la dimensión seleccionada.</p>
+    <div class="card">
+      <div class="subtabs" id="subtabsDesglose"></div>
+      <div class="chart-box" style="height:380px;">
+        <canvas id="chartDesglose"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SEGMENTACIÓN ============ -->
+  <section id="segmentacion">
+    <h2>Segmentación</h2>
+    <p class="lead">IA-EdC promedio según variables de caracterización de las empresas. Los cortes con pocos casos deben leerse como indicativos.</p>
+    <div class="card">
+      <select class="chooser" id="selectSegmentacion"></select>
+      <div class="chart-box" style="height:340px;">
+        <canvas id="chartSegmentacion"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PERCEPCIONES ============ -->
+  <section id="percepciones">
+    <h2>Percepciones, vinculación y barreras</h2>
+    <p class="lead">Preguntas de opción múltiple del cuestionario (no forman parte del cálculo del índice; son variables descriptivas).</p>
+    <div class="card">
+      <select class="chooser" id="selectMultirespuesta"></select>
+      <div class="chart-box" style="height:380px;">
+        <canvas id="chartMultirespuesta"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CUALITATIVO ============ -->
+  <section id="cualitativo">
+    <h2>Entrevistas y focus groups</h2>
+    <p class="lead"><span class="badge cuali">Cualitativo</span>Principales hallazgos del relevamiento cualitativo: entrevistas semiestructuradas a actores del ecosistema y dos focus groups (instituciones y unidades productivas).</p>
+    <div id="acordeonCualitativo"></div>
+  </section>
+
+  <!-- ============ TRIANGULACIÓN ============ -->
+  <section id="triangulacion">
+    <h2>Triangulación cuanti-cualitativa</h2>
+    <p class="lead">Qué confirma, matiza o diverge entre el IA-EdC y la evidencia cualitativa, dimensión por dimensión.</p>
+    <div class="card" style="overflow-x:auto;">
+      <table class="triangulacion" id="tablaTriangulacion"></table>
+    </div>
+  </section>
+
+  <!-- ============ CADENA DE VALOR ============ -->
+  <section id="cadena">
+    <h2>Cadena de valor del ecosistema EdC</h2>
+    <p class="lead">Estructura adoptada del Plan de Desarrollo Estratégico de Salta 2030 (CES-Salta): tres eslabones sucesivos, sostenidos por insumos transversales y habilitadores.</p>
+    <div class="grid cols-4" id="cadenaEslabones"></div>
+    <div class="card" style="margin-top:16px;">
+      <div class="subhead" style="margin-top:0;">Insumos transversales y habilitadores</div>
+      <p style="font-size:13.5px; margin:0;">Conectividad e infraestructura digital (ARSAT-REFEFO con 49 puntos de conexión en Salta, SALTIC, operadores privados) · Capital humano tecnológico (UNSa, UCASal, UPATecO, ~100 escuelas técnicas) · Polo Tecnológico de Salta · Programa AR-L1386 (ANR + vouchers) · Subsecretaría de EdC (Ley Provincial 8.302) · Mesa de Economía del Conocimiento.</p>
+    </div>
+  </section>
+
+  <!-- ============ CASOS DESTACADOS ============ -->
+  <section id="casos">
+    <h2>Casos destacados</h2>
+    <p class="lead">Fichas de buenas prácticas identificadas durante el relevamiento.</p>
+    <div class="grid cols-2" id="casosGrid" style="grid-template-columns:repeat(3,1fr);"></div>
+  </section>
+
+  <!-- ============ BENCHMARKING ============ -->
+  <section id="benchmarking">
+    <h2>Benchmarking con otras provincias</h2>
+    <p class="lead">Empresas adheridas al Régimen de Promoción de la Economía del Conocimiento cada 100.000 habitantes.</p>
+    <div class="card">
+      <div class="chart-box" style="height:320px;">
+        <canvas id="chartBenchmarking"></canvas>
+      </div>
+      <p class="n-note">Salta se ubica por debajo de todas las provincias de referencia y del promedio nacional. El tamaño poblacional no explica por sí solo el desempeño: San Juan y Tucumán, con mercados internos menores, registran mayor inserción relativa en el régimen.</p>
+    </div>
+  </section>
+
+  <!-- ============ BRECHAS E IMPLICANCIAS ============ -->
+  <section id="brechas">
+    <h2>Principales brechas identificadas</h2>
+    <p class="lead">Integración de la evidencia cuantitativa y cualitativa, organizada según el mismo esquema Core / Enablers / transversal del índice.</p>
+
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="subhead"><span class="badge core">Core</span>Capacidades internas</div>
+        <div id="brechasCore"></div>
+      </div>
+      <div class="card">
+        <div class="subhead"><span class="badge enablers">Enablers</span>Condiciones habilitantes</div>
+        <div id="brechasEnablers"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <div class="subhead" style="margin-top:0;">Brechas estructurales y transversales</div>
+      <div id="brechasTransversales"></div>
+    </div>
+
+    <h2 style="margin-top:40px;">Implicancias para el diseño de instrumentos</h2>
+    <p class="lead">Recomendaciones derivadas de las brechas, para los dos instrumentos centrales del Componente 1 (desarrollo operativo completo en el Entregable de Bases y Condiciones).</p>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="subhead" style="margin-top:0;">Aportes No Reembolsables (ANR)</div>
+        <ul class="checklist" id="implicanciasANR"></ul>
+      </div>
+      <div class="card">
+        <div class="subhead" style="margin-top:0;">Vouchers tecnológicos</div>
+        <ul class="checklist" id="implicanciasVouchers"></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONCLUSIONES ============ -->
+  <section id="conclusiones">
+    <h2>Conclusiones</h2>
+    <div class="card">
+      <p style="font-size:14px; margin:0 0 14px;">El sector TIC y Robótica de Salta se encuentra, en promedio, en una etapa <strong>Básica</strong> de adopción de EdC (41,4/100), sin casos en el nivel Avanzado. El diagnóstico integrado —cuantitativo y cualitativo— muestra un ecosistema con <strong>capacidades internas (Core) relativamente más desarrolladas que sus condiciones habilitantes (Enablers)</strong>: Capital Humano es la dimensión de mejor desempeño, sostenida por una fuerte cultura de innovación, mientras que Vinculación Institucional es la más rezagada, con baja articulación entre empresas, universidades y organismos de CyT.</p>
+      <p style="font-size:14px; margin:0;">El desafío de política pública no se limita a incrementar la adopción tecnológica de las unidades productivas, sino a <strong>fortalecer su capacidad de actuar como proveedoras de soluciones para el resto del entramado productivo provincial</strong> — conectando las capacidades ya instaladas con financiamiento, instituciones, mercados y oportunidades de colaboración. Las prioridades de intervención: cerrar la brecha de vinculación, reducir barreras de información, fortalecer capital humano especializado, facilitar acceso a financiamiento, y promover la articulación con sectores productivos estratégicos —particularmente minería—.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Fuente: elaboración propia en base al relevamiento de campo, Componente 1 — Sector TIC y Robótica, Salta.
+  Metodología del Índice de Adopción de Soluciones EdC (IA-EdC), secciones 3.4.1–3.4.4.
+</footer>
+
+<script>
+/* =======================================================================
+   DATOS (extraídos del dataset generado por generar_dataset_tablero.py)
+   ======================================================================= */
+const AZUL_800="#1F4E79", AZUL_500="#5B9BD5", AZUL_300="#8FAADC", AZUL_100="#DCE6F5", GRIS_500="#595959", GRIS_200="#D9D9D9";
+const PALETA_DEGRADE=["#BDD7EE","#8FAADC","#5B9BD5","#2E6DA4","#1F4E79"];
+
+Chart.defaults.font.family = "-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif";
+Chart.defaults.color = "#262626";
+
+const DIMENSIONES = [
+  {dim:"Tecnología Aplicada", puntaje:40.13, grupo:"Core"},
+  {dim:"Innovación e I+D", puntaje:42.70, grupo:"Core"},
+  {dim:"Capital Humano", puntaje:50.84, grupo:"Core"},
+  {dim:"Vinculación", puntaje:26.10, grupo:"Enablers"},
+  {dim:"Capacidad de Inversión y Acceso a Recursos", puntaje:39.47, grupo:"Enablers"},
+];
+
+const NIVELES = [
+  {nivel:"Inicial", n:2, pct:10.5},
+  {nivel:"Básico", n:12, pct:63.2},
+  {nivel:"Intermedio", n:5, pct:26.3},
+  {nivel:"Avanzado", n:0, pct:0.0},
+];
+
+const DESGLOSE = {
+  "Tecnología Aplicada": [
+    {sub:"Infraestructura digital", etiqueta:"Ciberseguridad y datos críticos", puntaje:50.00},
+    {sub:"Infraestructura digital", etiqueta:"Cloud computing / SaaS / IaaS", puntaje:44.74},
+    {sub:"Software y gestión", etiqueta:"Software de gestión (ERP/CRM)", puntaje:48.68},
+    {sub:"Software y gestión", etiqueta:"Plataformas digitales propias", puntaje:76.32},
+    {sub:"Automatización", etiqueta:"Automatización de procesos (RPA/BPM)", puntaje:44.74},
+    {sub:"Automatización", etiqueta:"Robótica industrial/colaborativa", puntaje:13.16},
+    {sub:"Automatización", etiqueta:"SCADA / control de procesos", puntaje:13.16},
+    {sub:"Automatización", etiqueta:"IoT industrial", puntaje:11.84},
+    {sub:"Automatización", etiqueta:"Automatización de líneas / OT-IT", puntaje:7.89},
+    {sub:"Datos e IA", etiqueta:"Business Intelligence / dashboards", puntaje:55.26},
+    {sub:"Datos e IA", etiqueta:"IA / Machine Learning", puntaje:63.16},
+    {sub:"Datos e IA", etiqueta:"Data Science / análisis avanzado", puntaje:52.63},
+  ],
+  "Innovación e I+D": [
+    {etiqueta:"Conocimiento/adhesión al Régimen EdC", puntaje:22.22},
+    {etiqueta:"Desarrollo de productos/procesos innovadores", puntaje:40.28},
+    {etiqueta:"Actividades formales de I+D", puntaje:45.61},
+    {etiqueta:"% facturación destinado a I+D", puntaje:56.82},
+    {etiqueta:"Activos de PI registrados", puntaje:65.38},
+  ],
+  "Capital Humano": [
+    {etiqueta:"Nivel educativo", puntaje:25.00},
+    {etiqueta:"Inversión en capacitación del personal", puntaje:48.53},
+    {etiqueta:"Capacidades digitales del equipo", puntaje:49.34},
+    {etiqueta:"Facilidad para cubrir puestos técnicos", puntaje:59.26},
+    {etiqueta:"Cultura de innovación organizacional", puntaje:87.04},
+  ],
+  "Capacidad de Inversión": [
+    {etiqueta:"Calificación del acceso a financiamiento", puntaje:25.00},
+    {etiqueta:"% facturación invertida en tecnología/EdC", puntaje:54.55},
+  ],
+  "Vinculación": [
+    {etiqueta:"Participación en cámaras/clusters/redes", puntaje:18.75},
+    {etiqueta:"Vinculación con instituciones científico-tecnológicas", puntaje:29.41},
+    {etiqueta:"Vínculo con alguna institución", puntaje:34.21},
+  ],
+};
+
+const SEGMENTACION = {
+  "Tamaño de empresa": [
+    {cat:"Pequeña (11-50)", n:5, iaedc:30.68},
+    {cat:"Micro (1-10)", n:10, iaedc:44.99},
+    {cat:"Mediana (150+)", n:2, iaedc:54.99},
+  ],
+  "Condición exportadora": [
+    {cat:"En proceso de exportar", n:5, iaedc:33.68},
+    {cat:"No exporta ni tiene planes", n:8, iaedc:42.14},
+    {cat:"Actualmente exporta", n:2, iaedc:49.06},
+  ],
+  "Naturaleza jurídica": [
+    {cat:"Asociación civil / Fundación", n:1, iaedc:32.83},
+    {cat:"PyME familiar / unipersonal", n:5, iaedc:39.59},
+    {cat:"S.A.", n:6, iaedc:44.22},
+    {cat:"Startup", n:2, iaedc:47.91},
+    {cat:"S.R.L.", n:3, iaedc:55.88},
+  ],
+  "Registro ante ARCA": [
+    {cat:"Registrada en ARCA", n:16, iaedc:41.14},
+    {cat:"No registrada en ARCA", n:3, iaedc:42.88},
+  ],
+  "Subsector de actividad": [
+    {cat:"Servicios TIC", n:1, iaedc:27.31},
+    {cat:"Robótica educativa o de servicios", n:1, iaedc:32.83},
+    {cat:"Otro", n:4, iaedc:42.00},
+    {cat:"Desarrollo de software y aplicaciones", n:6, iaedc:44.80},
+    {cat:"Consultoría tecnológica y transformación digital", n:4, iaedc:48.37},
+    {cat:"Telecomunicaciones", n:1, iaedc:51.19},
+  ],
+  "Localización": [
+    {cat:"Capital Salta", n:18, iaedc:41.15},
+    {cat:"Interior de la provincia", n:1, iaedc:46.27},
+  ],
+};
+
+const MULTIRESPUESTA = {
+  "P2.2 · Sectores a los que dirige soluciones EdC": [
+    {cat:"Minería", n:9, pct:50.0}, {cat:"TIC y Robótica (propio sector)", n:7, pct:38.9},
+    {cat:"Industria manufacturera", n:7, pct:38.9}, {cat:"Construcción", n:5, pct:27.8},
+    {cat:"Turismo", n:5, pct:27.8}, {cat:"Agroindustria y agro", n:4, pct:22.2},
+    {cat:"Otro", n:4, pct:22.2}, {cat:"Ciencias de la vida / Salud", n:3, pct:16.7},
+    {cat:"Audiovisual / Medios", n:2, pct:11.1}, {cat:"Ns/Nc", n:2, pct:11.1},
+  ],
+  "P2.5 · Origen de proveedores EdC": [
+    {cat:"Proveedores nacionales", n:8, pct:42.1}, {cat:"Ns/Nc", n:7, pct:36.8},
+    {cat:"Proveedores internacionales", n:4, pct:21.1}, {cat:"Proveedores locales", n:2, pct:10.5},
+    {cat:"Desarrollamos nuestras propias soluciones", n:2, pct:10.5},
+  ],
+  "P4.2 · Perfiles profesionales demandados": [
+    {cat:"Desarrollo de software / ingeniería en sistemas", n:8, pct:44.4}, {cat:"Marketing digital", n:8, pct:44.4},
+    {cat:"Ciencias de datos / IA / ML", n:4, pct:22.2}, {cat:"Ciberseguridad", n:4, pct:22.2},
+    {cat:"Gestión de proyectos tecnológicos", n:4, pct:22.2}, {cat:"Diseño UX/UI", n:4, pct:22.2},
+    {cat:"Robótica / automatización industrial", n:3, pct:16.7}, {cat:"Otro", n:2, pct:11.1},
+    {cat:"DevOps / infraestructura cloud", n:1, pct:5.6}, {cat:"Ns/Nc", n:1, pct:5.6},
+  ],
+  "P5.3 · Instituciones de vinculación": [
+    {cat:"UNSa", n:9, pct:47.4}, {cat:"UCASal", n:7, pct:36.8},
+    {cat:"Ninguna", n:6, pct:31.6}, {cat:"Clúster Tecnológico Salta", n:5, pct:26.3},
+    {cat:"INTI", n:4, pct:21.1}, {cat:"UPATECO", n:4, pct:21.1},
+    {cat:"CONICET", n:3, pct:15.8}, {cat:"IITA", n:1, pct:5.3}, {cat:"Otro", n:1, pct:5.3},
+  ],
+  "P5.4 · Apoyos de interés del Programa BID": [
+    {cat:"Capacitación y asistencia técnica", n:9, pct:47.4},
+    {cat:"Fondos concursables (ANR)", n:6, pct:31.6},
+    {cat:"Vouchers para adquisición de tecnología", n:6, pct:31.6},
+    {cat:"Acceso a infraestructura en el Polo Tecnológico", n:6, pct:31.6},
+    {cat:"Asistencia para exportar servicios tecnológicos", n:4, pct:21.1},
+    {cat:"Conexión con compradores de otros sectores", n:3, pct:15.8},
+    {cat:"No le interesa", n:2, pct:10.5}, {cat:"Ns/Nc", n:2, pct:10.5},
+  ],
+  "P6.6 · Certificaciones tecnológicas": [
+    {cat:"Ninguna", n:14, pct:82.4}, {cat:"ISO 9001 (calidad)", n:2, pct:11.8},
+    {cat:"Otro", n:1, pct:5.9}, {cat:"Ns/Nc", n:1, pct:5.9},
+  ],
+  "P7.1 · Principales obstáculos": [
+    {cat:"Desconocimiento de las opciones disponibles", n:7, pct:46.7},
+    {cat:"Falta de personal capacitado en tecnología", n:5, pct:33.3},
+    {cat:"Falta de financiamiento específico", n:5, pct:33.3},
+    {cat:"Alto costo de las soluciones tecnológicas", n:3, pct:20.0},
+    {cat:"Resistencia al cambio dentro de la organización", n:2, pct:13.3},
+    {cat:"No lo considera necesario para el negocio", n:1, pct:6.7},
+  ],
+};
+
+/* =======================================================================
+   GAUGE (SVG) — hero
+   ======================================================================= */
+function pintarGauge(valor){
+  const svg = document.getElementById("gauge");
+  const cx=150, cy=155, r=120;
+  const bandas = [
+    {desde:0, hasta:25, color:"#DCE6F5"},
+    {desde:25, hasta:50, color:"#8FAADC"},
+    {desde:50, hasta:75, color:"#5B9BD5"},
+    {desde:75, hasta:100, color:"#1F4E79"},
+  ];
+  const toRad = v => Math.PI - (v/100)*Math.PI; // 0 -> pi (izq), 100 -> 0 (der)
+  const pt = (v,radio) => [cx + radio*Math.cos(toRad(v)), cy - radio*Math.sin(toRad(v))];
+
+  let html = "";
+  bandas.forEach(b=>{
+    const [x1,y1]=pt(b.desde,r), [x2,y2]=pt(b.hasta,r);
+    const largeArc = (b.hasta-b.desde) > 50 ? 1 : 0;
+    html += `<path d="M ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2}"
+              stroke="${b.color}" stroke-width="22" fill="none" stroke-linecap="butt"/>`;
+  });
+  // marcas de nivel
+  [0,25,50,75,100].forEach(v=>{
+    const [x1,y1]=pt(v,r-13), [x2,y2]=pt(v,r+13);
+    html += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#FFFFFF" stroke-width="2"/>`;
+  });
+  // aguja
+  const [nx,ny] = pt(valor, r-6);
+  html += `<circle cx="${cx}" cy="${cy}" r="7" fill="#12283D"/>`;
+  html += `<line x1="${cx}" y1="${cy}" x2="${nx}" y2="${ny}" stroke="#12283D" stroke-width="4" stroke-linecap="round"/>`;
+  svg.innerHTML = html;
+}
+pintarGauge(41.41);
+
+/* =======================================================================
+   CHART: distribución de niveles
+   ======================================================================= */
+new Chart(document.getElementById("chartNiveles"), {
+  type:"bar",
+  data:{
+    labels: NIVELES.map(d=>d.nivel),
+    datasets:[{
+      data: NIVELES.map(d=>d.pct),
+      backgroundColor:[AZUL_300, AZUL_800, "#2E6DA4", GRIS_200],
+      borderRadius:4, maxBarThickness:46,
+    }]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:false},
+      tooltip:{ callbacks:{ label:(c)=> `${c.raw.toFixed(1).replace(".",",")}% (${NIVELES[c.dataIndex].n} empresas)` } } },
+    scales:{ y:{ display:false, max:70 }, x:{ grid:{display:false} } }
+  }
+});
+
+/* =======================================================================
+   CHART: puntaje por dimensión
+   ======================================================================= */
+const dimOrdenadas = [...DIMENSIONES].sort((a,b)=>a.puntaje-b.puntaje);
+new Chart(document.getElementById("chartDimensiones"), {
+  type:"bar",
+  data:{
+    labels: dimOrdenadas.map(d=>d.dim),
+    datasets:[{
+      data: dimOrdenadas.map(d=>d.puntaje),
+      backgroundColor: dimOrdenadas.map((_,i)=>PALETA_DEGRADE[i]),
+      borderRadius:4,
+    }]
+  },
+  options:{
+    indexAxis:"y", responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:false},
+      tooltip:{ callbacks:{ label:(c)=> `${c.raw.toFixed(1).replace(".",",")} puntos (${dimOrdenadas[c.dataIndex].grupo})` } } },
+    scales:{ x:{ min:0, max:100, title:{display:true, text:"Puntaje (0-100)", font:{weight:"bold"}} } }
+  }
+});
+
+/* =======================================================================
+   DESGLOSE por dimensión (subtabs)
+   ======================================================================= */
+let chartDesglose;
+function pintarDesglose(nombreDim){
+  const datos = DESGLOSE[nombreDim].slice().sort((a,b)=>a.puntaje-b.puntaje);
+  const ctx = document.getElementById("chartDesglose");
+  if(chartDesglose) chartDesglose.destroy();
+  chartDesglose = new Chart(ctx, {
+    type:"bar",
+    data:{
+      labels: datos.map(d=>d.etiqueta),
+      datasets:[{
+        data: datos.map(d=>d.puntaje),
+        backgroundColor: datos.map((_,i)=> PALETA_DEGRADE[Math.min(i, PALETA_DEGRADE.length-1)]),
+        borderRadius:4,
+      }]
+    },
+    options:{
+      indexAxis:"y", responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        tooltip:{ callbacks:{ label:(c)=> `${c.raw.toFixed(1).replace(".",",")} puntos` } } },
+      scales:{ x:{ min:0, max:100, title:{display:true, text:"Puntaje (0-100)", font:{weight:"bold"}} } }
+    }
+  });
+}
+const subtabsWrap = document.getElementById("subtabsDesglose");
+Object.keys(DESGLOSE).forEach((dim,i)=>{
+  const btn = document.createElement("button");
+  btn.textContent = dim;
+  if(i===0) btn.classList.add("active");
+  btn.onclick = ()=>{
+    subtabsWrap.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    pintarDesglose(dim);
+  };
+  subtabsWrap.appendChild(btn);
+});
+pintarDesglose(Object.keys(DESGLOSE)[0]);
+
+/* =======================================================================
+   SEGMENTACIÓN (select)
+   ======================================================================= */
+let chartSegmentacion;
+function pintarSegmentacion(nombreVar){
+  const datos = SEGMENTACION[nombreVar].slice().sort((a,b)=>a.iaedc-b.iaedc);
+  const ctx = document.getElementById("chartSegmentacion");
+  if(chartSegmentacion) chartSegmentacion.destroy();
+  chartSegmentacion = new Chart(ctx, {
+    type:"bar",
+    data:{
+      labels: datos.map(d=>d.cat),
+      datasets:[{
+        data: datos.map(d=>d.iaedc),
+        backgroundColor: datos.map((_,i)=> PALETA_DEGRADE[Math.min(i, PALETA_DEGRADE.length-1)]),
+        borderRadius:4,
+      }]
+    },
+    options:{
+      indexAxis:"y", responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        tooltip:{ callbacks:{ label:(c)=> `${c.raw.toFixed(1).replace(".",",")} puntos (n=${datos[c.dataIndex].n})` } } },
+      scales:{ x:{ min:0, max:70, title:{display:true, text:"IA-EdC (0-100)", font:{weight:"bold"}} } }
+    }
+  });
+}
+const selectSeg = document.getElementById("selectSegmentacion");
+Object.keys(SEGMENTACION).forEach(nombre=>{
+  const opt = document.createElement("option"); opt.value=nombre; opt.textContent=nombre;
+  selectSeg.appendChild(opt);
+});
+selectSeg.onchange = ()=> pintarSegmentacion(selectSeg.value);
+pintarSegmentacion(Object.keys(SEGMENTACION)[0]);
+
+/* =======================================================================
+   MULTIRESPUESTA (select)
+   ======================================================================= */
+let chartMultirespuesta;
+function pintarMultirespuesta(nombrePregunta){
+  const datos = MULTIRESPUESTA[nombrePregunta].slice().sort((a,b)=>a.pct-b.pct);
+  const ctx = document.getElementById("chartMultirespuesta");
+  if(chartMultirespuesta) chartMultirespuesta.destroy();
+  chartMultirespuesta = new Chart(ctx, {
+    type:"bar",
+    data:{
+      labels: datos.map(d=>d.cat),
+      datasets:[{
+        data: datos.map(d=>d.pct),
+        backgroundColor: AZUL_800,
+        borderRadius:4,
+      }]
+    },
+    options:{
+      indexAxis:"y", responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        tooltip:{ callbacks:{ label:(c)=> `${c.raw.toFixed(1).replace(".",",")}% (${datos[c.dataIndex].n} empresas)` } } },
+      scales:{ x:{ min:0, max:100, title:{display:true, text:"% de empresas", font:{weight:"bold"}} } }
+    }
+  });
+}
+const selectMulti = document.getElementById("selectMultirespuesta");
+Object.keys(MULTIRESPUESTA).forEach(nombre=>{
+  const opt = document.createElement("option"); opt.value=nombre; opt.textContent=nombre;
+  selectMulti.appendChild(opt);
+});
+selectMulti.onchange = ()=> pintarMultirespuesta(selectMulti.value);
+pintarMultirespuesta(Object.keys(MULTIRESPUESTA)[0]);
+
+/* =======================================================================
+   CUALITATIVO — acordeón de entrevistas y focus groups
+   ======================================================================= */
+const CUALITATIVO = [
+  {
+    titulo: "Entrevistas semiestructuradas — síntesis general",
+    parrafos: [
+      "Las entrevistas muestran un ecosistema con capacidades y activos relevantes (talento, instituciones de formación y CyT, iniciativas de articulación, demanda potencial en sectores estratégicos), aunque con niveles de articulación y consolidación todavía heterogéneos.",
+    ],
+    bullets: [
+      "Dificultades de acceso y aprovechamiento de los instrumentos de promoción de EdC: desconocimiento de beneficios y percepción de alta complejidad administrativa (nacional y provincial).",
+      "Financiamiento: valoración positiva de ANR y vouchers, pero montos considerados insuficientes para procesos de transformación de mayor alcance.",
+      "Capital humano: base de talento joven y comunidades de desarrolladores con potencial, pero débil transición entre formación y actividad empresarial.",
+      "Vinculación empresa-universidad-CyT incipiente: barreras culturales e institucionales, confianza limitada entre sector privado y academia.",
+      "Necesidad de fortalecer la gobernanza y el modelo de gestión del Polo Tecnológico, evitando que la infraestructura física se convierta en un fin en sí mismo.",
+      "Minería como principal oportunidad de especialización sectorial; robótica identificada como segmento de menor consolidación (menos empresas, casos de uso y demanda efectiva).",
+    ],
+  },
+  {
+    titulo: "Focus group con instituciones científico-tecnológicas",
+    parrafos: [
+      "Principal desafío identificado: ausencia de mecanismos consolidados para conectar de manera sistemática la oferta de conocimiento con las necesidades de las empresas — consistente con el bajo desempeño cuantitativo de Vinculación.",
+    ],
+    bullets: [
+      "Baja articulación y visibilidad de la oferta tecnológica existente, en ambos sentidos (empresas no conocen la oferta académica; instituciones no identifican bien la demanda).",
+      "Barreras institucionales y regulatorias: tiempos prolongados para formalizar convenios, reglas no armonizadas de propiedad intelectual e incentivos para investigadores.",
+      "Discontinuidad de instrumentos de financiamiento a la investigación aplicada, particularmente en etapas de escalamiento.",
+      "Dificultad para disponer de perfiles técnicos especializados (automatización, robótica, IA) y migración de talento hacia otros mercados.",
+      "Ventana de oportunidad: mayor disposición reciente de instituciones (CONICET, UNSa, INTA, INTI, SEGEMAR) a prestar servicios y desarrollar proyectos con empresas.",
+      "El Polo Tecnológico puede ser un nodo relevante, pero su impacto depende de gobernanza, servicios, capital humano, financiamiento y reglas claras de vinculación y PI.",
+    ],
+  },
+  {
+    titulo: "Focus group con unidades productivas del sector",
+    parrafos: [
+      "Los participantes describen el ecosistema con términos que reflejan tensión entre potencial y estado actual: \"potente\", \"desaprovechado\", \"incipiente\", \"anticuado\", \"cerrado\".",
+    ],
+    bullets: [
+      "Desconexión entre investigación universitaria y demandas del sector productivo; los desarrollos académicos rara vez escalan comercialmente.",
+      "Barreras estructurales: alta informalidad de la economía salteña (temor a trazabilidad fiscal), entorno legal/impositivo rígido (3 meses para constituir sociedad en Salta vs. 15 días para una LLC en EE.UU.), y baja confianza tecnológica de decisores de empresas tradicionales.",
+      "Oportunidad de sustitución de importaciones tecnológicas: empresas y sector público contratan proveedores externos existiendo capacidad local.",
+      "Demandas de infraestructura: espacios de trabajo compartido tipo distrito de innovación, y debate sobre data center local vs. créditos de computación en la nube.",
+      "Propuesta de financiamiento escalonado por etapas (validación → desarrollo/formalización → escalamiento), sin exigir formalización societaria en etapas iniciales.",
+      "Sugerencia de mecanismos de selección por calidad/viabilidad del proyecto (competencias, \"buildathons\") en vez de solo criterios administrativos.",
+    ],
+  },
+];
+
+const acordeon = document.getElementById("acordeonCualitativo");
+CUALITATIVO.forEach((bloque, i) => {
+  const det = document.createElement("details");
+  det.className = "accordion-item";
+  if (i === 0) det.open = true;
+  det.innerHTML = `
+    <summary>${bloque.titulo}</summary>
+    <div class="accordion-body">
+      ${bloque.parrafos.map(p => `<p>${p}</p>`).join("")}
+      <ul>${bloque.bullets.map(b => `<li>${b}</li>`).join("")}</ul>
+    </div>`;
+  acordeon.appendChild(det);
+});
+
+/* =======================================================================
+   TRIANGULACIÓN — tabla por dimensión
+   ======================================================================= */
+const TRIANGULACION = [
+  {
+    dim: "Tecnología Aplicada", grupo: "core",
+    cuanti: "Software y gestión (62,5) y Datos/IA (57,0) altos; Automatización física (18,2) muy rezagada.",
+    cuali: "Confirma la jerarquía. Matiza: incluso la infraestructura digital/cloud/ciberseguridad suele adoptarse de forma reactiva (por presión de clientes), no como estrategia planificada — el índice podría sobrestimar la sostenibilidad de la adopción.",
+  },
+  {
+    dim: "Innovación e I+D", grupo: "core",
+    cuanti: "42,7 puntos; 65,4% declara PI registrada.",
+    cuali: "Confirma actividad incipiente y concentrada en pocas empresas. Matiza fuerte: la PI registrada corresponde mayoritariamente a marcas comerciales, no a patentes — el índice podría sobreestimar la capacidad innovadora real.",
+  },
+  {
+    dim: "Capital Humano", grupo: "core",
+    cuanti: "50,8 (la más alta); cultura de innovación 87,0; nivel educativo 25,0 (la más baja de todo el índice).",
+    cuali: "Confirma talento y cultura de innovación. Matiza: la falta de posgrado no sería una limitante real (mucho se aprende de forma autodidacta). Diverge: los focus groups señalan fuga de talento percibida, pese a la baja dificultad declarada para cubrir puestos — posible sesgo de empresas ya establecidas en la encuesta.",
+  },
+  {
+    dim: "Vinculación", grupo: "enablers",
+    cuanti: "26,1 (la más rezagada de todo el índice); sus 3 componentes con patrón consistente de baja intensidad.",
+    cuali: "Fuerte convergencia. Explica las causas: desconfianza mutua sector privado-academia, tiempos prolongados de convenios, ausencia de reglas de PI, baja visibilidad de la oferta tecnológica en ambos sentidos.",
+  },
+  {
+    dim: "Capacidad de Inversión", grupo: "enablers",
+    cuanti: "39,5; acceso a financiamiento 25,0 vs. inversión con recursos propios 54,5.",
+    cuali: "Confirma: empresas invierten con recursos propios pero perciben barreras externas. Agrega factores no capturados por el índice: informalidad económica, rigidez legal/impositiva, tiempos de constitución societaria (3 meses en Salta vs. 15 días LLC en EE.UU.).",
+  },
+];
+
+const tablaTri = document.getElementById("tablaTriangulacion");
+tablaTri.innerHTML = `
+  <thead><tr><th>Dimensión</th><th><span class="badge cuanti">Cuantitativo (IA-EdC)</span></th><th><span class="badge cuali">Cualitativo (entrevistas + focus groups)</span></th></tr></thead>
+  <tbody>
+  ${TRIANGULACION.map(t => `
+    <tr>
+      <td class="dim"><span class="badge ${t.grupo}">${t.grupo === "core" ? "Core" : "Enablers"}</span><br>${t.dim}</td>
+      <td>${t.cuanti}</td>
+      <td>${t.cuali}</td>
+    </tr>`).join("")}
+  </tbody>`;
+
+/* =======================================================================
+   CADENA DE VALOR — tarjetas de eslabones
+   ======================================================================= */
+const ESLABONES = [
+  { n: "1", titulo: "Investigación e Innovación", desc: "I+D aplicada (CONICET, INTI, INTA, IITA), formación continua de talento, I+D privada. Escasa participación del sector privado en este eslabón." },
+  { n: "2", titulo: "Desarrollo de productos y servicios", desc: "Núcleo productivo: software y servicios TI, consultoría tecnológica, automatización y robótica. 94% de las empresas concentradas en Salta Capital." },
+  { n: "3", titulo: "Comercialización e inserción sectorial", desc: "Mercado externo (exportación SSI), mercado de insumos sectorial (minería, agroindustria, turismo) y consumo local. Articulación con el eslabón anterior débil." },
+  { n: "★", titulo: "Habilitadores", desc: "Polo Tecnológico de Salta, Programa AR-L1386 (ANR + vouchers), Subsecretaría de EdC, Mesa de EdC. Determinan si el ecosistema puede dar un salto cualitativo." },
+];
+document.getElementById("cadenaEslabones").innerHTML = ESLABONES.map(e => `
+  <div class="card">
+    <div style="font-family:var(--serif); font-weight:700; font-size:22px; color:var(--azul-500); margin-bottom:6px;">${e.n}</div>
+    <div style="font-family:var(--sans); font-weight:700; font-size:13.5px; color:var(--azul-950); margin-bottom:6px;">${e.titulo}</div>
+    <div style="font-size:12.5px; color:var(--gris-500);">${e.desc}</div>
+  </div>`).join("");
+
+/* =======================================================================
+   CASOS DESTACADOS
+   ======================================================================= */
+const CASOS = [
+  {
+    nombre: "Inntech S.A.", sub: "TIC / Software industrial — Automatización e Industria 4.0 · Salta · desde 2021",
+    datos: [["Áreas", "Software Industrial e IIoT, Automatización (PLC/DCS), IA, Ciberseguridad OT/IT"], ["Sector objetivo", "Minería (litio) e industria manufacturera"], ["Clientes", "Sales de Jujuy – Arcadium Lithium · CCU Salta"]],
+    desc: "Integró el sistema DCS en la planta de litio de Arcadium (Salar de Olaroz) y realizó una evaluación integral de ciberseguridad IT/OT en CCU-Salta. Ejemplo verificable de empresa salteña proveyendo soluciones EdC al sector minero regional.",
+  },
+  {
+    nombre: "IITA", sub: "Robótica Educativa · Salta · instituto privado",
+    datos: [["Áreas", "Robótica educativa, diseño de videojuegos, animación digital, IA, programación, marketing digital"], ["Público", "Niños, jóvenes y adultos"], ["Modalidad", "Presencial y online, plataforma propia"]],
+    desc: "Instituto de capacitación 100% privado con 12 años de trayectoria y equipos de robótica con resultados en competencias internacionales, financiado íntegramente con cuotas de alumnos.",
+  },
+  {
+    nombre: "La.Te Andes S.A.", sub: "I+D / Innovación — Servicios geológicos · Vaqueros, Salta",
+    datos: [["Certificación", "ISO 9001:2015"], ["Vinculación", "INENCO (CONICET-UNSa) · Universidad de Heidelberg (Alemania)"], ["Régimen EdC", "Una de las 3 empresas salteñas efectivamente adheridas"]],
+    desc: "Empresa mixta (GEOMAP S.A. + CONICET) dedicada a análisis termocronológicos para minería e hidrocarburos. Caso raro y valioso de vinculación científico-tecnológica internacional sostenida en el tiempo.",
+  },
+];
+document.getElementById("casosGrid").innerHTML = CASOS.map(c => `
+  <div class="case-card">
+    <h3>${c.nombre}</h3>
+    <div class="case-sub">${c.sub}</div>
+    <dl>${c.datos.map(([k,v]) => `<dt>${k}</dt><dd>${v}</dd>`).join("")}</dl>
+    <p class="desc">${c.desc}</p>
+  </div>`).join("");
+
+/* =======================================================================
+   BENCHMARKING
+   ======================================================================= */
+const BENCHMARKING = [
+  { prov: "Córdoba", val: 4.17 }, { prov: "Mendoza", val: 1.52 },
+  { prov: "San Juan", val: 0.85 }, { prov: "Tucumán", val: 0.81 },
+  { prov: "Salta", val: 0.21 },
+];
+new Chart(document.getElementById("chartBenchmarking"), {
+  type: "bar",
+  data: {
+    labels: BENCHMARKING.map(d => d.prov),
+    datasets: [{
+      data: BENCHMARKING.map(d => d.val),
+      backgroundColor: BENCHMARKING.map(d => d.prov === "Salta" ? "#8C8C8C" : AZUL_800),
+      borderRadius: 4, maxBarThickness: 60,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false },
+      tooltip: { callbacks: { label: (c) => `${c.raw.toFixed(2)} empresas cada 100.000 hab.` } } },
+    scales: { y: { title: { display: true, text: "Empresas EdC / 100.000 hab.", font: { weight: "bold" } } } }
+  }
+});
+
+/* =======================================================================
+   BRECHAS
+   ======================================================================= */
+const BRECHAS_CORE = [
+  { t: "Adopción tecnológica", d: "Automatización física e industrial (robótica, SCADA, IoT) en 18,2 puntos, muy por debajo del resto de subcategorías. La adopción, incluso en infraestructura digital, suele ser reactiva más que planificada." },
+  { t: "Innovación e I+D", d: "Actividades incipientes y concentradas (42,7 puntos). La PI registrada (65,4%) es mayormente marcas comerciales, no patentes — posible sobreestimación de la capacidad innovadora." },
+  { t: "Capital humano", d: "Mejor dimensión relativa (50,8), pero con brecha marcada en nivel educativo formal (25,0, la más baja del índice) por presencia casi nula de posgrados." },
+];
+const BRECHAS_ENABLERS = [
+  { t: "Financiamiento", d: "39,5 puntos con fuerte asimetría: acceso a instrumentos (25,0) vs. inversión con recursos propios (54,5). Bajo conocimiento de líneas, complejidad administrativa, requisitos de cofinanciamiento inalcanzables para micro/monotributistas." },
+  { t: "Vinculación", d: "26,1 puntos, la dimensión más rezagada de todo el índice. Baja articulación y visibilidad de oferta tecnológica en ambos sentidos; tiempos prolongados de convenios; ausencia de reglas de PI e incentivos." },
+];
+const BRECHAS_TRANSVERSALES = [
+  { t: "Concentración territorial", d: "94% de las unidades productivas en el Departamento Capital; solo 6% en el interior (Orán, Cerrillos, La Caldera). Limita el impacto distribuido territorialmente del Programa si no se incorporan mecanismos específicos." },
+  { t: "Heterogeneidad por tamaño y subsector", d: "Patrones no lineales: unidades medianas (55,0) superan a micro (45,0) y pequeñas (30,7). Telecomunicaciones es el único subsector en nivel Intermedio; Servicios TIC y Robótica educativa, los más bajos. Un enfoque uniforme podría no ser efectivo." },
+  { t: "Entorno regulatorio y de negocios", d: "Alta informalidad económica, rigidez legal/impositiva, y tiempos de constitución societaria (3 meses en Salta vs. 15 días para una LLC en EE.UU.) llevan a que startups locales opten por facturar desde el exterior." },
+];
+
+function pintarBrechas(id, lista, clase) {
+  document.getElementById(id).innerHTML = lista.map(b => `
+    <div class="brecha-item ${clase}"><h4>${b.t}</h4><p>${b.d}</p></div>`).join("");
+}
+pintarBrechas("brechasCore", BRECHAS_CORE, "");
+pintarBrechas("brechasEnablers", BRECHAS_ENABLERS, "enabler");
+pintarBrechas("brechasTransversales", BRECHAS_TRANSVERSALES, "");
+
+/* =======================================================================
+   IMPLICANCIAS PARA INSTRUMENTOS
+   ======================================================================= */
+const IMPLICANCIAS_ANR = [
+  "Orientar una porción hacia proyectos de co-desarrollo intersectorial (minería 50%, industria manufacturera 38,9%).",
+  "Priorizar, dentro del componente Core, proyectos de automatización física e industrial y robótica — la brecha más severa detectada.",
+  "Adoptar financiamiento escalonado por etapas (validación → desarrollo/formalización → escalamiento), sin exigir formalización societaria en etapas iniciales.",
+  "Incorporar mecanismos de selección por calidad/viabilidad del proyecto (competencias, \"buildathons\") como alternativa a los criterios administrativos tradicionales.",
+  "Diferenciar líneas según subsector y perfil del solicitante (robótica ≠ software factory).",
+];
+const IMPLICANCIAS_VOUCHERS = [
+  "Destinar una porción significativa a las subcategorías más rezagadas: automatización industrial, infraestructura digital y ciberseguridad.",
+  "Incluir explícitamente capacitación y asistencia técnica como gasto elegible — el apoyo más demandado (47%), por encima del financiamiento directo.",
+  "Contemplar servicios de computación en la nube y créditos tecnológicos como alternativa o complemento a infraestructura física.",
+  "Vincular el acceso a mecanismos que incentiven la contratación de proveedores tecnológicos locales (sustitución de importaciones tecnológicas).",
+];
+document.getElementById("implicanciasANR").innerHTML = IMPLICANCIAS_ANR.map(i => `<li>${i}</li>`).join("");
+document.getElementById("implicanciasVouchers").innerHTML = IMPLICANCIAS_VOUCHERS.map(i => `<li>${i}</li>`).join("");
+</script>
+</body>
+</html>

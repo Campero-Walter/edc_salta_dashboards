@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Economía del Conocimiento · TIC y Robótica · Salta</title>
+<style>
+  :root{
+    --azul-950:#12283D; --azul-800:#1F4E79; --azul-500:#5B9BD5; --azul-100:#DCE6F5;
+    --gris-500:#595959; --gris-200:#D9D9D9; --gris-50:#F7F8FA;
+    --serif: Georgia, 'Times New Roman', serif;
+    --sans: -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{ margin:0; background:var(--gris-50); color:#262626; font-family:var(--sans); }
+  header{ background:var(--azul-950); color:#fff; padding:32px clamp(16px,5vw,64px); }
+  header .eyebrow{ font-size:11px; letter-spacing:1.6px; text-transform:uppercase; color:var(--azul-100); display:block; margin-bottom:6px; }
+  header h1{ font-family:var(--serif); font-size:clamp(24px,3.4vw,34px); margin:0; }
+  header p{ color:var(--gris-200); font-size:14px; max-width:640px; margin:10px 0 0; }
+
+  main{ max-width:920px; margin:0 auto; padding:40px clamp(16px,5vw,64px) 80px; display:grid; gap:22px; grid-template-columns:1fr 1fr; }
+  @media (max-width:700px){ main{ grid-template-columns:1fr; } }
+
+  a.card{
+    display:block; background:#fff; border:1px solid var(--gris-200); border-radius:10px;
+    padding:26px 24px; text-decoration:none; color:inherit; transition:border-color .15s, transform .15s;
+  }
+  a.card:hover{ border-color:var(--azul-500); transform:translateY(-2px); }
+  a.card .tag{ font-size:11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--azul-800); background:var(--azul-100); padding:3px 10px; border-radius:12px; }
+  a.card h2{ font-family:var(--serif); font-size:19px; margin:14px 0 8px; color:var(--azul-950); }
+  a.card p{ font-size:13.5px; color:var(--gris-500); margin:0; }
+  a.card .go{ margin-top:16px; font-size:13px; font-weight:700; color:var(--azul-800); }
+
+  footer{ text-align:center; padding:24px; font-size:12px; color:var(--gris-500); }
+</style>
+</head>
+<body>
+<header>
+  <span class="eyebrow">Componente 1 · Programa BID AR-L1386</span>
+  <h1>Economía del Conocimiento — TIC y Robótica, Salta</h1>
+  <p>Tableros interactivos del diagnóstico: contexto sectorial (fuentes secundarias) e índice de adopción de soluciones EdC (relevamiento primario).</p>
+</header>
+<main>
+  <a class="card" href="contexto.html">
+    <span class="tag">Entregable 2</span>
+    <h2>Diagnóstico de Contexto</h2>
+    <p>Caracterización del sector con fuentes secundarias: evolución, empleo, distribución, marco normativo, brechas de conectividad, talento y financiamiento.</p>
+    <div class="go">Ver tablero →</div>
+  </a>
+  <a class="card" href="indice.html">
+    <span class="tag">Entregable 3A</span>
+    <h2>Índice IA-EdC</h2>
+    <p>Resultados del relevamiento cuantitativo y cualitativo: índice de adopción, dimensiones, percepciones, entrevistas, triangulación y casos destacados.</p>
+    <div class="go">Ver tablero →</div>
+  </a>
+</main>
+<footer>Programa AR-L1386 · Banco Interamericano de Desarrollo</footer>
+</body>
+</html>
