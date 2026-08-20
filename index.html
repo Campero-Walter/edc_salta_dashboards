@@ -13,13 +13,20 @@
   }
   *{box-sizing:border-box;}
   body{ margin:0; background:var(--gris-50); color:#262626; font-family:var(--sans); }
-  header{ background:var(--azul-950); color:#fff; padding:24px clamp(16px,5vw,64px); display:flex; align-items:center; justify-content:space-between; gap:24px; flex-wrap:wrap; }
-  header .texto{ flex:1; min-width:260px; }
-  header .eyebrow{ font-size:11px; letter-spacing:1.6px; text-transform:uppercase; color:var(--azul-100); display:block; margin-bottom:6px; }
-  header h1{ font-family:var(--serif); font-size:clamp(24px,3.4vw,34px); margin:0; }
-  header p{ color:var(--gris-200); font-size:14px; max-width:640px; margin:10px 0 0; }
-  header .logos{ flex-shrink:0; }
-  header .logos img{ max-height:104px; width:auto; display:block; background:#fff; padding:8px 16px; border-radius:6px; }
+
+  header{
+    position:relative;
+    background:
+      linear-gradient(180deg, rgba(10,20,35,.88), rgba(10,20,35,.93)),
+      url("assets/hero-bg.jpg") center center / cover no-repeat;
+    color:#fff;
+    padding:56px clamp(16px,5vw,64px) 48px;
+    display:flex; flex-direction:column; align-items:center; text-align:center; gap:18px;
+  }
+  header .logos img{ max-height:104px; width:auto; display:block; background:#fff; padding:8px 16px; border-radius:6px; margin:0 auto; }
+  header .eyebrow{ font-size:11px; letter-spacing:1.6px; text-transform:uppercase; color:var(--azul-100); display:block; }
+  header h1{ font-family:var(--serif); font-size:clamp(24px,3.4vw,36px); margin:0; max-width:820px; }
+  header .institucional{ font-size:13px; color:var(--gris-200); max-width:760px; line-height:1.6; }
 
   main{ max-width:920px; margin:0 auto; padding:40px clamp(16px,5vw,64px) 80px; display:grid; gap:22px; grid-template-columns:1fr 1fr; }
   @media (max-width:700px){ main{ grid-template-columns:1fr; } }
@@ -29,39 +36,38 @@
     padding:26px 24px; text-decoration:none; color:inherit; transition:border-color .15s, transform .15s;
   }
   a.card:hover{ border-color:var(--azul-500); transform:translateY(-2px); }
-  a.card .tag{ font-size:11px; font-weight:700; letter-spacing:.5px; text-transform:uppercase; color:var(--azul-800); background:var(--azul-100); padding:3px 10px; border-radius:12px; }
-  a.card h2{ font-family:var(--serif); font-size:19px; margin:14px 0 8px; color:var(--azul-950); }
+  a.card h2{ font-family:var(--serif); font-size:19px; margin:0 0 8px; color:var(--azul-950); }
   a.card p{ font-size:13.5px; color:var(--gris-500); margin:0; }
   a.card .go{ margin-top:16px; font-size:13px; font-weight:700; color:var(--azul-800); }
 
   footer{ text-align:center; padding:24px; font-size:12px; color:var(--gris-500); }
+  footer .desc{ font-weight:700; font-style:italic; max-width:640px; margin:0 auto 10px; font-size:13px; color:var(--gris-800,#333); }
 </style>
 </head>
 <body>
 <header>
-  <div class="texto">
-    <span class="eyebrow">Componente 1 · Programa BID AR-L1386</span>
-    <h1>Economía del Conocimiento — TIC y Robótica, Salta</h1>
-    <p>Tableros interactivos del diagnóstico: contexto sectorial (fuentes secundarias) e índice de adopción de soluciones EdC (relevamiento primario).</p>
-  </div>
   <div class="logos">
     <img src="assets/logos.jpeg" alt="Gobierno de Salta - Ministerio de Economía y Servicios Públicos / Banco Interamericano de Desarrollo (BID)">
   </div>
+  <span class="eyebrow">Componente 1 · Programa BID AR-L1386</span>
+  <h1>Economía del Conocimiento — TIC y Robótica, Salta</h1>
+  <div class="institucional">Banco Interamericano de Desarrollo · Secretaría de Financiamiento y Planificación Financiera | Ministerio de Economía y Servicios Públicos de la Provincia de Salta</div>
 </header>
 <main>
   <a class="card" href="contexto.html">
-    <span class="tag">Entregable 2</span>
-    <h2>Diagnóstico de Contexto</h2>
+    <h2>Tablero de Diagnóstico de Contexto</h2>
     <p>Caracterización del sector con fuentes secundarias: evolución, empleo, distribución, marco normativo, brechas de conectividad, talento y financiamiento.</p>
     <div class="go">Ver tablero →</div>
   </a>
   <a class="card" href="indice.html">
-    <span class="tag">Entregable 3A</span>
-    <h2>Índice IA-EdC</h2>
+    <h2>Tablero Índice IA-EdC</h2>
     <p>Resultados del relevamiento cuantitativo y cualitativo: índice de adopción, dimensiones, percepciones, entrevistas, triangulación y casos destacados.</p>
     <div class="go">Ver tablero →</div>
   </a>
 </main>
-<footer>Programa AR-L1386 · Banco Interamericano de Desarrollo</footer>
+<footer>
+  <p class="desc">Tableros interactivos del diagnóstico: contexto sectorial (fuentes secundarias) e índice de adopción de soluciones EdC (relevamiento primario).</p>
+  Programa AR-L1386 · Banco Interamericano de Desarrollo
+</footer>
 </body>
 </html>
